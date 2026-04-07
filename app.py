@@ -91,10 +91,10 @@ if st.button("Generate Development Strategy", key="deploy_btn"):
                       value=f"{int(future_total):,}")
         
         with res_col2:
-            if future_total > 400000:
+            if projected_increase > 400000:
                 st.success("### 🏙️ TIER 1: MASSIVE DEMAND")
                 st.write("**Strategy:** High-rise Vertical Development")
-            elif future_total > 150000:
+            elif projected_increase > 150000:
                 st.success("### 🏡 TIER 2: SUSTAINED GROWTH")
                 st.write("**Strategy:** Suburban Gated Communities")
             else:
