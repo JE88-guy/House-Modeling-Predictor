@@ -73,36 +73,43 @@ if st.button("Generate Development Strategy", key="deploy_btn"):
     # Final Dataframe
     feature_df = pd.DataFrame(input_dict)[model_features]
     
-    try:
-        prediction = model.predict(feature_df)[0]
+   try:
+        # We treat the model output as the 'Projected Increase'
+        projected_increase = model.predict(feature_df)[0]
+        
+        # Calculate the Future Total based on your input
+        future_total = pop_prev + projected_increase
         
         st.divider()
-        
-        # FIX: Define the layout columns for the results section
         res_col1, res_col2 = st.columns([1, 2])
         
         with res_col1:
-            st.metric(label=f"Projected {target_year} Population", value=f"{int(prediction):,}")
+            st.metric(label="Predicted New Residents", 
+                      value=f"{int(projected_increase):,}",
+                      delta=f"{((projected_increase/pop_prev)*100):.2f}% Growth")
+            
+            st.metric(label=f"Total {target_year} Population", 
+                      value=f"{int(future_total):,}")
         
         with res_col2:
-            if prediction > 5000000:
-                st.success("### 🏙️ STRATEGY: TIER 1 - HIGH DENSITY")
-                st.write("**Recommended Project:** Vertical Development (Condominiums / Mixed-Use)")
-                st.info("**Rationale:** High population density indicates high land value. Focus on maximizing units per square meter.")
+            # Tiers are now based on 'Projected Increase' (The Demand)
+            if projected_increase > 400000:
+                st.success("### 🏙️ TIER 1: MASSIVE DEMAND")
+                st.write("**Strategy:** High-rise Vertical Development")
+                st.info(f"Rationale: Over 400k new residents expected. High-density housing is required to prevent an urban crisis.")
             
-            elif prediction > 2000000:
-                st.success("### 🏡 STRATEGY: TIER 2 - SUBURBAN EXPANSION")
-                st.write("**Recommended Project:** Horizontal Development (Gated Subdivisions / Row-houses)")
-                st.info("**Rationale:** Moderate growth suggests family-oriented residential demand with space for amenities.")
+            elif projected_increase > 150000:
+                st.success("### 🏡 TIER 2: SUSTAINED GROWTH")
+                st.write("**Strategy:** Suburban Gated Communities")
+                st.info(f"Rationale: Moderate influx of ~{int(projected_increase/1000)}k people suggests demand for family-sized horizontal housing.")
             
             else:
-                st.warning("### 🏗️ STRATEGY: TIER 3 - NICHE / SPECULATIVE")
-                st.write("**Recommended Project:** Niche Residential or Commercial Leasing")
-                st.info("**Rationale:** Lower population growth suggests focusing on high-end niche buyers or light industrial use.")
+                st.warning("### 🏗️ TIER 3: SLOW/STABLE MARKET")
+                st.write("**Strategy:** Niche or Socialized Housing")
+                st.info("Rationale: Low growth volume suggests focusing on high-end niche projects or government-assisted housing.")
                 
     except Exception as e:
         st.error(f"Operational Error: {e}")
-
 # Footer for your project submission
 st.divider()
 st.caption("Final Model Deployment - CRISP-DM Phase 6 - Housing Estate Analysis Framework")
